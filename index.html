@@ -1,0 +1,1046 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>DevToolBox - All-in-One Tools</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * {
+      margin: 0; padding: 0; box-sizing: border-box;
+      font-family: 'Inter', sans-serif;
+    }
+    body {
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: #fff;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      transition: direction 0.3s ease;
+    }
+    header {
+      background: rgba(255,255,255,0.05);
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      backdrop-filter: blur(10px);
+      box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      transition: padding 0.3s ease;
+    }
+    .left-header {
+      display: flex;
+      align-items: center;
+      gap: 30px;
+      transition: gap 0.3s ease;
+    }
+    .logo {
+      font-size: 24px;
+      font-weight: 700;
+      color: #00ffe7;
+      user-select: none;
+    }
+    nav a {
+      margin-left: 20px;
+      text-decoration: none;
+      color: #ccc;
+      position: relative;
+      transition: color 0.3s;
+      user-select: none;
+    }
+    nav a::after {
+      content: '';
+      position: absolute;
+      width: 0%;
+      height: 2px;
+      bottom: -4px;
+      left: 0;
+      background-color: #00ffe7;
+      transition: width 0.3s ease-in-out;
+    }
+    nav a:hover {
+      color: #00ffe7;
+    }
+    nav a:hover::after {
+      width: 100%;
+    }
+    .lang-select {
+      background: transparent;
+      border: 1px solid #00ffe7;
+      color: #fff;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 14px;
+      cursor: pointer;
+      user-select: none;
+      transition: border-color 0.3s, color 0.3s;
+    }
+    .lang-select:hover {
+      border-color: #00c7b0;
+      color: #00c7b0;
+    }
+    .hero {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 40px;
+      transition: padding 0.3s ease;
+    }
+    .hero h1 {
+      font-size: 48px;
+      line-height: 1.2;
+      margin-bottom: 20px;
+      user-select: none;
+    }
+    .hero p {
+      font-size: 20px;
+      color: #aaa;
+      max-width: 600px;
+      margin-bottom: 30px;
+      user-select: none;
+    }
+    .hero button {
+      background: #00ffe7;
+      color: #000;
+      padding: 15px 30px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s, transform 0.2s;
+      user-select: none;
+    }
+    .hero button:hover {
+      background: #00c7b0;
+      transform: scale(1.05);
+    }
+    section {
+      padding: 60px 40px;
+      background-color: rgba(255,255,255,0.03);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      transition: padding 0.3s ease;
+    }
+    section h2 {
+      font-size: 32px;
+      margin-bottom: 20px;
+      color: #00ffe7;
+      text-align: center;
+      user-select: none;
+    }
+    .tool-list, .resource-list, .extra-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+      margin-top: 20px;
+      user-select: none;
+    }
+    .card {
+      background: rgba(255,255,255,0.08);
+      padding: 24px;
+      border-radius: 16px;
+      text-align: center;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12), 0 1.5px 6px rgba(0,255,231,0.08);
+      transition: transform 0.3s, background 0.3s, box-shadow 0.3s;
+      cursor: pointer;
+      user-select: none;
+      border: 1.5px solid transparent;
+      font-size: 1.15em;
+    }
+    .card:hover {
+      background: rgba(0,255,231,0.08);
+      transform: translateY(-10px) scale(1.03);
+      box-shadow: 0 8px 32px rgba(0,255,231,0.18), 0 2px 8px rgba(0,0,0,0.18);
+      border-color: #00ffe7;
+      color: #00ffe7;
+    }
+    /* زر العودة للأعلى */
+    #back-to-top {
+      position: fixed;
+      bottom: 32px;
+      right: 32px;
+      background: #00ffe7;
+      color: #222;
+      border: none;
+      border-radius: 50%;
+      width: 48px;
+      height: 48px;
+      font-size: 24px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.18);
+      cursor: pointer;
+      display: none;
+      z-index: 2000;
+      transition: background 0.3s, transform 0.2s;
+    }
+    #back-to-top:hover {
+      background: #00c7b0;
+      transform: scale(1.12);
+    }
+    footer {
+      padding: 20px;
+      text-align: center;
+      color: #666;
+      font-size: 14px;
+      user-select: none;
+    }
+
+    /* RTL styles when Arabic is selected */
+    body.rtl {
+      direction: rtl;
+      background: linear-gradient(to left, #0f2027, #203a43, #2c5364);
+    }
+    body.rtl nav a {
+      margin-left: 0;
+      margin-right: 20px;
+    }
+    body.rtl nav a::after {
+      left: auto;
+      right: 0;
+    }
+    body.rtl .left-header {
+      gap: 30px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="left-header">
+      <div class="logo" id="logo">DevToolBox</div>
+      <nav>
+        <a href="#tools" data-en="Tools" data-ar="الأدوات">Tools</a>
+        <a href="#resources" data-en="Resources" data-ar="الموارد">Resources</a>
+        <a href="#extras" data-en="Extras" data-ar="إضافات">Extras</a>
+        <a href="#about" data-en="About" data-ar="حول">About</a>
+      </nav>
+    </div>
+    <div style="display:flex;align-items:center;gap:16px;">
+      <input id="search-bar" type="text" placeholder="🔍 Search tools or resources..." style="padding:7px 16px;border-radius:8px;border:1px solid #00ffe7;background:rgba(255,255,255,0.08);color:#fff;font-size:15px;outline:none;width:220px;" />
+      <select class="lang-select" id="lang-select" aria-label="اختر اللغة">
+        <option value="en">English</option>
+        <option value="ar">العربية</option>
+      </select>
+      <button id="login-btn" data-en="Login" data-ar="تسجيل الدخول" style="padding:7px 20px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;">Login</button>
+    </div>
+  </header>
+
+  <!-- صفحة تسجيل الدخول (مخفية افتراضياً) -->
+  <div id="login-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:3000;align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(0,255,231,0.10) 100%);backdrop-filter:blur(18px) saturate(160%);border-radius:22px;box-shadow:0 8px 32px rgba(0,255,231,0.22),0 2px 8px rgba(0,0,0,0.18);padding:44px 36px 36px 36px;min-width:320px;max-width:95vw;display:flex;flex-direction:column;align-items:center;position:relative;border:1.5px solid rgba(255,255,255,0.22);">
+      <button id="close-login" style="position:absolute;top:18px;right:18px;background:none;border:none;font-size:22px;color:#00ffe7;cursor:pointer;">&times;</button>
+      <h2 id="login-title" data-en="Login to DevToolBox" data-ar="تسجيل الدخول إلى DevToolBox" style="color:#00ffe7;margin-bottom:18px;">Login to DevToolBox</h2>
+      <form id="login-form" style="width:100%;display:flex;flex-direction:column;gap:18px;">
+        <input type="text" id="login-username" placeholder="Username" data-en="Username" data-ar="اسم المستخدم" style="padding:10px 14px;border-radius:8px;border:1px solid #00ffe7;background:rgba(255,255,255,0.12);color:#222;font-size:16px;outline:none;" required />
+        <div style="position:relative;display:flex;align-items:center;">
+          <input type="password" id="login-password" placeholder="Password" data-en="Password" data-ar="كلمة المرور" style="padding:10px 14px 10px 14px;border-radius:8px;border:1px solid #00ffe7;background:rgba(255,255,255,0.12);color:#222;font-size:16px;outline:none;width:100%;" required />
+          <button type="button" id="toggle-password" title="Show/Hide Password" style="position:absolute;right:10px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;padding:0;font-size:18px;color:#00c7b0;">
+            <svg id="eye-icon" xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24"><path stroke="#00c7b0" stroke-width="2" d="M1.5 12S5.5 5.5 12 5.5 22.5 12 22.5 12 18.5 18.5 12 18.5 1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#00c7b0" stroke-width="2"/></svg>
+          </button>
+        </div>
+        <button type="submit" id="login-submit" data-en="Login" data-ar="تسجيل الدخول" style="padding:10px 0;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;font-size:17px;cursor:pointer;">Login</button>
+        <button type="button" id="google-login" data-en="Login with Google" data-ar="تسجيل الدخول بواسطة جوجل" style="padding:10px 0;border-radius:8px;border:none;background:#fff;color:#222;font-weight:bold;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;margin-top:4px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+        
+        </button>
+      </form>
+      <div id="login-msg" style="margin-top:12px;color:#ff4c4c;font-size:15px;display:none;"></div>
+    </div>
+  </div>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1 data-en="All-in-One Toolkit for Designers & Developers" data-ar="مجموعة أدوات شاملة للمصممين والمطورين">
+      All-in-One Toolkit for Designers & Developers
+    </h1>
+    <p data-en="Access powerful tools like Color Picker, QR Generator, Icon Packs, JSON Formatter, and more — all in one beautifully designed platform."
+       data-ar="الوصول إلى أدوات قوية مثل منتقي الألوان، توليد QR، حزم الأيقونات، تنسيق JSON والمزيد — كل ذلك في منصة واحدة مصممة بشكل أنيق.">
+      Access powerful tools like Color Picker, QR Generator, Icon Packs, JSON Formatter, and more — all in one beautifully designed platform.
+    </p>
+    <div id="quote-box" style="margin:24px 0 12px 0;">
+      <div class="card" style="background:rgba(255,255,255,0.10);padding:40px 56px;border-radius:22px;box-shadow:0 8px 32px rgba(0,255,231,0.18),0 2px 8px rgba(0,0,0,0.18);display:inline-block;min-width:340px;max-width:700px;">
+        <span id="random-quote" style="font-size:20px;color:#00ffe7;display:block;margin-bottom:16px;"></span>
+        <button id="new-quote-btn" data-en="New Quote" data-ar="اقتباس جديد" style="padding:7px 20px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;">New Quote</button>
+      </div>
+      <style>
+        #random-quote.typewriter {
+          border-right: 2px solid #00ffe7;
+          white-space: nowrap;
+          overflow: hidden;
+          animation: blink-caret 0.8s step-end infinite;
+        }
+        @keyframes blink-caret {
+          from, to { border-color: transparent; }
+          50% { border-color: #00ffe7; }
+        }
+      </style>
+    </div>
+    <button onclick="document.getElementById('tools').scrollIntoView({behavior: 'smooth'})"
+            data-en="Explore Tools" data-ar="استكشاف الأدوات">Explore Tools</button>
+  </section>
+
+  <section class="tools" id="tools">
+    <h2 data-en="Featured Tools" data-ar="أدوات مميزة">Featured Tools</h2>
+    <div class="tool-list">
+      <div class="card" data-en="🎨Color Picker" data-ar="🎨منتقي الألوان">🎨 Color Picker</div>
+      <div class="card" data-en="📦QR Code Generator" data-ar="📦توليد رمز QR">📦 QR Code Generator</div>
+      <div class="card" data-en="🧾JSON Formatter" data-ar="🧾منسق JSON">🧾 JSON Formatter</div>
+      <div class="card" data-en="🔠Text Case Converter" data-ar="🔠محول حالة النصوص">🔠 Text Case Converter</div>
+      <div class="card" data-en="🧠Random Quote Generator" data-ar="🧠مولد اقتباسات عشوائية">🧠 Random Quote Generator</div>
+      <div class="card" data-en="💡Project Name Generator" data-ar="💡مولد أسماء المشاريع">💡 Project Name Generator</div>
+    </div>
+  </section>
+
+  <section class="resources" id="resources">
+    <h2 data-en="Free Resources" data-ar="موارد مجانية">Free Resources</h2>
+    <div class="resource-list">
+      <div class="card" data-en="🔤Free Fonts Collection" data-ar="🔤مجموعة خطوط مجانية">🔤 Free Fonts Collection</div>
+      <div class="card" data-en="📦SVG Icon Packs" data-ar="📦حزم أيقونات SVG">📦 SVG Icon Packs</div>
+      <div class="card" data-en="🌄Background Images" data-ar="🌄خلفيات وصور">🌄 Background Images</div>
+      <div class="card" data-en="🎨Gradient Generator" data-ar="🎨مولد تدرجات لونية">🎨 Gradient Generator</div>
+      <div class="card" data-en="🌀CSS Snippets" data-ar="🌀مقتطفات CSS">🌀 CSS Snippets</div>
+    </div>
+  </section>
+
+  <section class="extras" id="extras">
+    <h2 data-en="More Useful Tools" data-ar="أدوات إضافية">More Useful Tools</h2>
+    <div class="extra-list">
+      <div class="card" data-en="⏳Countdown Timer" data-ar="⏳عداد تنازلي">⏳ Countdown Timer</div>
+      <div class="card" data-en="📝Notes & Sticky Tasks" data-ar="📝ملاحظات وSticky Notes">📝 Notes & Sticky Tasks</div>
+      <div class="card" data-en="🔐Password Generator" data-ar="🔐مولد كلمات مرور">🔐 Password Generator</div>
+      <div class="card" data-en="📄Markdown Previewer" data-ar="📄معاينة Markdown">📄 Markdown Previewer</div>
+      <div class="card" data-en="🔍Meta Tag Analyzer" data-ar="🔍محلل الوسوم Meta">🔍 Meta Tag Analyzer</div>
+
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <h2 data-en="About DevToolBox" data-ar="حول صندوق أدوات المطور">About DevToolBox</h2>
+    <p style="text-align:center; max-width: 700px; margin: 0 auto; color: #ccc;"
+       data-en="DevToolBox is a curated collection of essential tools and resources for designers and developers."
+       data-ar="صندوق أدوات المطور هو مجموعة من الأدوات والموارد الضرورية للمصممين والمطورين. تم تطويره بعناية لتعزيز الإنتاجية والإبداع، مع واجهة أنيقة وتجربة استخدام سلسة.">
+      DevToolBox is a curated collection of essential tools and resources for designers and developers.
+    </p>
+  </section>
+
+  <footer>
+    &copy; 2025 DevToolBox. All rights reserved.
+  </footer>
+
+  <button id="back-to-top" title="Back to Top">↑</button>
+
+  <!-- نافذة منتقي الألوان -->
+  <div id="color-picker-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:4000;align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(0,255,231,0.10) 100%);backdrop-filter:blur(14px) saturate(160%);border-radius:20px;box-shadow:0 8px 32px rgba(0,255,231,0.22),0 2px 8px rgba(0,0,0,0.18);padding:36px 32px 28px 32px;min-width:280px;max-width:95vw;display:flex;flex-direction:column;align-items:center;position:relative;border:1.5px solid rgba(255,255,255,0.22);">
+      <button id="close-color-picker" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;color:#00ffe7;cursor:pointer;">&times;</button>
+      <h3 style="color:#00ffe7;margin-bottom:18px;">منتقي الألوان / Color Picker</h3>
+      <input type="color" id="real-color-input" value="#00ffe7" style="width:80px;height:80px;border:none;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,0.10);margin-bottom:18px;cursor:pointer;" />
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span id="color-value" style="font-size:18px;color:#00ffe7;font-weight:bold;">#00ffe7</span>
+        <button id="copy-color" style="padding:6px 14px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:15px;">نسخ الكود</button>
+      </div>
+      <div id="color-copied-msg" style="color:#34A853;font-size:15px;display:none;margin-top:6px;">تم النسخ!</div>
+    </div>
+  </div>
+
+  <!-- نافذة مولد كلمات المرور -->
+  <div id="password-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:4000;align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(0,255,231,0.10) 100%);backdrop-filter:blur(14px) saturate(160%);border-radius:20px;box-shadow:0 8px 32px rgba(0,255,231,0.22),0 2px 8px rgba(0,0,0,0.18);padding:36px 32px 28px 32px;min-width:280px;max-width:95vw;display:flex;flex-direction:column;align-items:center;position:relative;border:1.5px solid rgba(255,255,255,0.22);">
+      <button id="close-password-modal" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;color:#00ffe7;cursor:pointer;">&times;</button>
+      <h3 style="color:#00ffe7;margin-bottom:18px;">مولد كلمات مرور / Password Generator</h3>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:18px;">
+        <input type="number" id="password-length" min="6" max="32" value="12" style="width:60px;padding:6px 10px;border-radius:8px;border:1px solid #00ffe7;background:rgba(255,255,255,0.12);color:#222;font-size:16px;outline:none;" />
+        <label for="password-length" style="color:#00ffe7;font-size:15px;">الطول</label>
+      </div>
+      <button id="generate-password" style="padding:8px 18px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:16px;margin-bottom:14px;">توليد كلمة مرور</button>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span id="generated-password" style="font-size:18px;color:#00ffe7;font-weight:bold;">••••••••••••</span>
+        <button id="copy-password" style="padding:6px 14px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:15px;">نسخ</button>
+      </div>
+      <div id="password-copied-msg" style="color:#34A853;font-size:15px;display:none;margin-top:6px;">تم النسخ!</div>
+    </div>
+  </div>
+
+  <!-- نافذة مولد رمز QR -->
+  <div id="qr-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:4000;align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(0,255,231,0.10) 100%);backdrop-filter:blur(14px) saturate(160%);border-radius:20px;box-shadow:0 8px 32px rgba(0,255,231,0.22),0 2px 8px rgba(0,0,0,0.18);padding:36px 32px 28px 32px;min-width:320px;max-width:95vw;display:flex;flex-direction:column;align-items:center;position:relative;border:1.5px solid rgba(255,255,255,0.22);">
+      <button id="close-qr-modal" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;color:#00ffe7;cursor:pointer;">&times;</button>
+      <h3 style="color:#00ffe7;margin-bottom:18px;">مولد رمز QR / QR Code Generator</h3>
+      <input type="text" id="qr-input" placeholder="أدخل نص أو رابط هنا..." style="width:220px;padding:10px 14px;border-radius:8px;border:1px solid #00ffe7;background:rgba(255,255,255,0.12);color:#222;font-size:16px;outline:none;margin-bottom:16px;" />
+      <button id="generate-qr" style="padding:8px 18px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:16px;margin-bottom:14px;">توليد رمز QR</button>
+      <div id="qr-result" style="margin-bottom:10px;"></div>
+      <button id="copy-qr" style="padding:6px 14px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:15px;display:none;">نسخ الصورة</button>
+      <div id="qr-copied-msg" style="color:#34A853;font-size:15px;display:none;margin-top:6px;">تم النسخ!</div>
+    </div>
+  </div>
+
+  <!-- نافذة منسق JSON -->
+  <div id="json-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:4000;align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(0,255,231,0.10) 100%);backdrop-filter:blur(14px) saturate(160%);border-radius:20px;box-shadow:0 8px 32px rgba(0,255,231,0.22),0 2px 8px rgba(0,0,0,0.18);padding:36px 32px 28px 32px;min-width:340px;max-width:95vw;display:flex;flex-direction:column;align-items:center;position:relative;border:1.5px solid rgba(255,255,255,0.22);">
+      <button id="close-json-modal" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;color:#00ffe7;cursor:pointer;">&times;</button>
+      <h3 style="color:#00ffe7;margin-bottom:18px;" data-en="JSON Formatter" data-ar="منسق JSON">JSON Formatter</h3>
+      <textarea id="json-input" placeholder="Paste or write your JSON here..." style="width:320px;height:110px;padding:10px 14px;border-radius:8px;border:1px solid #00ffe7;background:rgba(255,255,255,0.12);color:#222;font-size:16px;outline:none;margin-bottom:16px;resize:vertical;"></textarea>
+      <button id="format-json" style="padding:8px 18px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:16px;margin-bottom:14px;">تنسيق / Format</button>
+      <textarea id="json-output" readonly style="width:320px;height:110px;padding:10px 14px;border-radius:8px;border:1px solid #00ffe7;background:#fff;color:#222;font-size:16px;outline:none;margin-bottom:10px;resize:vertical;"></textarea>
+      <button id="copy-json" style="padding:6px 14px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:15px;">نسخ النتيجة</button>
+      <div id="json-copied-msg" style="color:#34A853;font-size:15px;display:none;margin-top:6px;">تم النسخ!</div>
+      <div id="json-error-msg" style="color:#ff4c4c;font-size:15px;display:none;margin-top:6px;"></div>
+    </div>
+  </div>
+
+  <!-- نافذة مولد أسماء المشاريع -->
+  <div id="project-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:4000;align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(0,255,231,0.10) 100%);backdrop-filter:blur(14px) saturate(160%);border-radius:20px;box-shadow:0 8px 32px rgba(0,255,231,0.22),0 2px 8px rgba(0,0,0,0.18);padding:36px 32px 28px 32px;min-width:340px;max-width:95vw;display:flex;flex-direction:column;align-items:center;position:relative;border:1.5px solid rgba(255,255,255,0.22);">
+      <button id="close-project-modal" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;color:#00ffe7;cursor:pointer;">&times;</button>
+      <h3 style="color:#00ffe7;margin-bottom:18px;" data-en="Project Name Generator" data-ar="مولد أسماء المشاريع">Project Name Generator</h3>
+      <button id="generate-project-name" style="padding:8px 18px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:16px;margin-bottom:14px;">توليد اسم</button>
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+        <span id="project-name-output" style="font-size:18px;color:#00ffe7;font-weight:bold;">—</span>
+        <button id="copy-project-name" style="padding:6px 14px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:15px;">نسخ</button>
+      </div>
+      <div id="project-copied-msg" style="color:#34A853;font-size:15px;display:none;margin-top:6px;">تم النسخ!</div>
+    </div>
+  </div>
+
+  <!-- نافذة معاينة Markdown -->
+  <div id="markdown-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:4000;align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(0,255,231,0.10) 100%);backdrop-filter:blur(14px) saturate(160%);border-radius:20px;box-shadow:0 8px 32px rgba(0,255,231,0.22),0 2px 8px rgba(0,0,0,0.18);padding:36px 32px 28px 32px;min-width:340px;max-width:95vw;display:flex;flex-direction:column;align-items:center;position:relative;border:1.5px solid rgba(255,255,255,0.22);">
+      <button id="close-markdown-modal" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;color:#00ffe7;cursor:pointer;">&times;</button>
+      <h3 style="color:#00ffe7;margin-bottom:18px;" data-en="Markdown Previewer" data-ar="معاينة Markdown">Markdown Previewer</h3>
+      <textarea id="markdown-input" placeholder="أدخل نص Markdown هنا..." style="width:320px;height:80px;padding:10px 14px;border-radius:8px;border:1px solid #00ffe7;background:rgba(255,255,255,0.12);color:#222;font-size:16px;outline:none;margin-bottom:16px;resize:vertical;"></textarea>
+      <button id="preview-markdown" style="padding:8px 18px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:16px;margin-bottom:14px;">معاينة</button>
+      <div id="markdown-output" style="width:320px;min-height:80px;background:#fff;color:#222;border-radius:8px;border:1px solid #00ffe7;padding:10px 14px;margin-bottom:10px;overflow:auto;"></div>
+    </div>
+  </div>
+
+  <!-- نافذة عداد تنازلي -->
+  <div id="countdown-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:4000;align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(0,255,231,0.10) 100%);backdrop-filter:blur(14px) saturate(160%);border-radius:20px;box-shadow:0 8px 32px rgba(0,255,231,0.22),0 2px 8px rgba(0,0,0,0.18);padding:36px 32px 28px 32px;min-width:340px;max-width:95vw;display:flex;flex-direction:column;align-items:center;position:relative;border:1.5px solid rgba(255,255,255,0.22);">
+      <button id="close-countdown-modal" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;color:#00ffe7;cursor:pointer;">&times;</button>
+      <h3 style="color:#00ffe7;margin-bottom:18px;" data-en="Countdown Timer" data-ar="عداد تنازلي">Countdown Timer</h3>
+      <input type="number" id="countdown-seconds" min="1" value="10" style="width:80px;padding:7px 14px;border-radius:8px;border:1px solid #00ffe7;background:rgba(255,255,255,0.12);color:#222;font-size:16px;outline:none;margin-bottom:16px;" />
+      <button id="start-countdown" style="padding:8px 18px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:16px;margin-bottom:14px;">ابدأ</button>
+      <div id="countdown-output" style="font-size:32px;color:#00ffe7;font-weight:bold;margin-bottom:10px;">—</div>
+    </div>
+  </div>
+
+  <!-- نافذة ملاحظات وSticky Notes -->
+  <div id="notes-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:4000;align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(0,255,231,0.10) 100%);backdrop-filter:blur(14px) saturate(160%);border-radius:20px;box-shadow:0 8px 32px rgba(0,255,231,0.22),0 2px 8px rgba(0,0,0,0.18);padding:36px 32px 28px 32px;min-width:340px;max-width:95vw;display:flex;flex-direction:column;align-items:center;position:relative;border:1.5px solid rgba(255,255,255,0.22);">
+      <button id="close-notes-modal" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;color:#00ffe7;cursor:pointer;">&times;</button>
+      <h3 style="color:#00ffe7;margin-bottom:18px;" data-en="Notes & Sticky Tasks" data-ar="ملاحظات وSticky Notes">Notes & Sticky Tasks</h3>
+      <textarea id="notes-input" placeholder="أضف ملاحظة..." style="width:320px;height:80px;padding:10px 14px;border-radius:8px;border:1px solid #00ffe7;background:rgba(255,255,255,0.12);color:#222;font-size:16px;outline:none;margin-bottom:16px;resize:vertical;"></textarea>
+      <button id="add-note" style="padding:8px 18px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:16px;margin-bottom:14px;">إضافة</button>
+      <div id="notes-list" style="width:320px;min-height:60px;background:#fff;color:#222;border-radius:8px;border:1px solid #00ffe7;padding:10px 14px;margin-bottom:10px;overflow:auto;"></div>
+    </div>
+  </div>
+
+  <!-- نافذة محلل الوسوم Meta -->
+  <div id="meta-modal" style="display:none;position:fixed;top:0;left:0;width:100vw;height:100vh;background:rgba(0,0,0,0.45);z-index:4000;align-items:center;justify-content:center;">
+    <div style="background:linear-gradient(135deg,rgba(255,255,255,0.18) 0%,rgba(0,255,231,0.10) 100%);backdrop-filter:blur(14px) saturate(160%);border-radius:20px;box-shadow:0 8px 32px rgba(0,255,231,0.22),0 2px 8px rgba(0,0,0,0.18);padding:36px 32px 28px 32px;min-width:340px;max-width:95vw;display:flex;flex-direction:column;align-items:center;position:relative;border:1.5px solid rgba(255,255,255,0.22);">
+      <button id="close-meta-modal" style="position:absolute;top:16px;right:16px;background:none;border:none;font-size:22px;color:#00ffe7;cursor:pointer;">&times;</button>
+      <h3 style="color:#00ffe7;margin-bottom:18px;" data-en="Meta Tag Analyzer" data-ar="محلل الوسوم Meta">Meta Tag Analyzer</h3>
+      <textarea id="meta-input" placeholder="أدخل كود HTML هنا..." style="width:320px;height:80px;padding:10px 14px;border-radius:8px;border:1px solid #00ffe7;background:rgba(255,255,255,0.12);color:#222;font-size:16px;outline:none;margin-bottom:16px;resize:vertical;"></textarea>
+      <button id="analyze-meta" style="padding:8px 18px;border-radius:8px;border:none;background:#00ffe7;color:#222;font-weight:bold;cursor:pointer;font-size:16px;margin-bottom:14px;">تحليل</button>
+      <div id="meta-output" style="width:320px;min-height:60px;background:#fff;color:#222;border-radius:8px;border:1px solid #00ffe7;padding:10px 14px;margin-bottom:10px;overflow:auto;"></div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script>
+    const langSelect = document.getElementById('lang-select');
+    // عناصر صفحة تسجيل الدخول
+    const loginBtn = document.getElementById('login-btn');
+    const loginModal = document.getElementById('login-modal');
+    const closeLogin = document.getElementById('close-login');
+    const loginForm = document.getElementById('login-form');
+    const loginTitle = document.getElementById('login-title');
+    const loginSubmit = document.getElementById('login-submit');
+    const googleLogin = document.getElementById('google-login');
+    const googleLoginText = document.getElementById('google-login-text');
+    const loginUsername = document.getElementById('login-username');
+    const loginPassword = document.getElementById('login-password');
+    const togglePassword = document.getElementById('toggle-password');
+    const eyeIcon = document.getElementById('eye-icon');
+    const loginMsg = document.getElementById('login-msg');
+
+    // إظهار صفحة تسجيل الدخول
+    if (loginBtn) {
+      loginBtn.addEventListener('click', () => {
+        loginModal.style.display = 'flex';
+        loginMsg.style.display = 'none';
+        loginUsername.value = '';
+        loginPassword.value = '';
+      });
+    }
+    // إغلاق صفحة تسجيل الدخول
+    if (closeLogin) {
+      closeLogin.addEventListener('click', () => {
+        loginModal.style.display = 'none';
+      });
+    }
+    // إغلاق عند الضغط خارج النموذج
+    if (loginModal) {
+      loginModal.addEventListener('click', (e) => {
+        if (e.target === loginModal) loginModal.style.display = 'none';
+      });
+    }
+    // منع إرسال النموذج (بدون تحقق حقيقي)
+    if (loginForm) {
+      loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        loginMsg.style.display = 'block';
+        loginMsg.textContent = (langSelect.value === 'ar') ? 'هذه مجرد صفحة تجريبية، لم يتم التحقق من البيانات.' : 'This is a demo page, no real authentication.';
+      });
+    }
+    // دعم تغيير اللغة للنصوص داخل صفحة تسجيل الدخول
+    // زر إظهار/إخفاء كلمة المرور
+    if (togglePassword && loginPassword) {
+      togglePassword.addEventListener('click', function() {
+        if (loginPassword.type === 'password') {
+          loginPassword.type = 'text';
+          eyeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24"><path stroke="#00c7b0" stroke-width="2" d="M4.21 4.21l15.58 15.58M9.5 9.5a3.5 3.5 0 0 1 4.95 4.95M1.5 12S5.5 5.5 12 5.5c2.09 0 4.01.52 5.67 1.41M22.5 12s-4 6.5-10.5 6.5c-2.09 0-4.01-.52-5.67-1.41"/><circle cx="12" cy="12" r="3.5" stroke="#00c7b0" stroke-width="2"/></svg>';
+        } else {
+          loginPassword.type = 'password';
+          eyeIcon.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24"><path stroke="#00c7b0" stroke-width="2" d="M1.5 12S5.5 5.5 12 5.5 22.5 12 22.5 12 18.5 18.5 12 18.5 1.5 12 1.5 12Z"/><circle cx="12" cy="12" r="3.5" stroke="#00c7b0" stroke-width="2"/></svg>';
+        }
+      });
+    }
+    function updateLoginLang(lang) {
+      if (loginTitle) loginTitle.textContent = loginTitle.getAttribute('data-' + lang);
+      if (loginSubmit) loginSubmit.textContent = loginSubmit.getAttribute('data-' + lang);
+      if (loginUsername) loginUsername.placeholder = loginUsername.getAttribute('data-' + lang);
+      if (loginPassword) loginPassword.placeholder = loginPassword.getAttribute('data-' + lang);
+      if (googleLogin && googleLoginText) googleLoginText.textContent = googleLogin.getAttribute('data-' + lang);
+    // زر جوجل (تجريبي)
+    if (googleLogin) {
+      googleLogin.addEventListener('click', function() {
+        loginMsg.style.display = 'block';
+        loginMsg.textContent = (langSelect.value === 'ar') ? 'ميزة تسجيل الدخول بواسطة جوجل تجريبية فقط.' : 'Google login is demo only.';
+      });
+    }
+    }
+    langSelect.addEventListener('change', e => {
+      updateLoginLang(e.target.value);
+    });
+    // عند تحميل الصفحة، ضبط نصوص صفحة تسجيل الدخول حسب اللغة الافتراضية
+    updateLoginLang(langSelect.value);
+
+    function changeLang(lang) {
+      const elements = document.querySelectorAll('[data-en]');
+      elements.forEach(el => {
+        el.innerHTML = el.getAttribute(`data-${lang}`);
+      });
+      if (lang === 'ar') {
+        document.body.classList.add('rtl');
+        document.documentElement.lang = 'ar';
+        document.documentElement.dir = 'rtl';
+      } else {
+        document.body.classList.remove('rtl');
+        document.documentElement.lang = 'en';
+        document.documentElement.dir = 'ltr';
+      }
+    }
+
+    langSelect.addEventListener('change', e => {
+      changeLang(e.target.value);
+    });
+
+    // ابدأ باللغة الانجليزية بشكل افتراضي
+    changeLang('en');
+
+    // زر العودة للأعلى
+    const backToTopBtn = document.getElementById('back-to-top');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.style.display = 'block';
+      } else {
+        backToTopBtn.style.display = 'none';
+      }
+    });
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+
+    // ميزة الاقتباس العشوائي مع دعم العربية
+    const quotes = [
+      {en: "Success is not about luck, but about the effort you put in every single day to improve yourself and your skills.", ar: "النجاح ليس عن الحظ، بل عن الجهد الذي تبذله كل يوم لتحسين نفسك ومهاراتك."},
+      {en: "Your journey in development is a series of small victories that build up to great achievements over time.", ar: "رحلتك في التطوير هي سلسلة من الانتصارات الصغيرة التي تتراكم لتصبح إنجازات عظيمة مع مرور الوقت."},
+      {en: "Every challenge you face is an opportunity to learn something new and become a better version of yourself.", ar: "كل تحدٍ تواجهه هو فرصة لتتعلم شيئاً جديداً وتصبح نسخة أفضل من نفسك."},
+      {en: "Consistency in your work will always yield better results than bursts of effort followed by long pauses.", ar: "الاستمرارية في عملك ستؤدي دائماً إلى نتائج أفضل من دفعات الجهد التي تتبعها فترات توقف طويلة."},
+      {en: "The best developers are those who never stop asking questions and seeking answers.", ar: "أفضل المطورين هم الذين لا يتوقفون عن طرح الأسئلة والبحث عن الإجابات."},
+      {en: "Your code is a reflection of your thinking; make it clear, logical, and purposeful.", ar: "كودك هو انعكاس لطريقة تفكيرك؛ اجعله واضحاً ومنطقياً وذا هدف."},
+      {en: "Growth happens when you step outside your comfort zone and try something you’ve never done before.", ar: "النمو يحدث عندما تخرج من منطقة الراحة وتجرب شيئاً لم تفعله من قبل."},
+      {en: "Mistakes are not failures, but stepping stones on the path to mastery and innovation.", ar: "الأخطاء ليست فشلاً، بل هي خطوات على طريق الإتقان والابتكار."},
+      {en: "The journey of a thousand lines of code begins with a single keystroke.", ar: "رحلة ألف سطر برمجي تبدأ بضغطة زر واحدة."},
+      {en: "Your passion for learning will open doors that talent alone cannot unlock.", ar: "شغفك بالتعلم سيفتح لك أبواباً لا يستطيع الموهبة وحدها فتحها."},
+      {en: "Every day you invest in yourself brings you closer to the goals you once thought impossible.", ar: "كل يوم تستثمر فيه بنفسك يقربك من الأهداف التي كنت تظنها مستحيلة."},
+      {en: "Success in development is built on patience, persistence, and a willingness to adapt.", ar: "النجاح في التطوير يُبنى على الصبر والمثابرة والاستعداد للتكيف."},
+      {en: "Your ideas have the power to shape the future; don’t be afraid to share them with the world.", ar: "أفكارك لديها القدرة على تشكيل المستقبل؛ لا تخف من مشاركتها مع العالم."},
+      {en: "The most valuable skill you can develop is the ability to keep moving forward, no matter the obstacles.", ar: "أهم مهارة يمكنك تطويرها هي القدرة على الاستمرار في التقدم مهما كانت العقبات."},
+      {en: "Great developers are made, not born; every hour you spend learning is an investment in your future.", ar: "المطورون العظماء يُصنعون ولا يُولدون؛ كل ساعة تقضيها في التعلم هي استثمار في مستقبلك."},
+      {en: "Your journey is unique; don’t compare your progress to anyone else’s, just keep improving.", ar: "رحلتك فريدة؛ لا تقارن تقدمك بأي شخص آخر، فقط واصل التحسن."},
+      {en: "The best solutions often come from the simplest ideas, so never underestimate the power of simplicity.", ar: "أفضل الحلول غالباً ما تأتي من أبسط الأفكار، فلا تستهين أبداً بقوة البساطة."},
+      {en: "Every bug you fix is a lesson learned and a step closer to mastery.", ar: "كل خطأ برمجي تصلحه هو درس مكتسب وخطوة نحو الإتقان."},
+      {en: "Your determination to keep going when things get tough is what sets you apart from the rest.", ar: "إصرارك على الاستمرار عندما تصبح الأمور صعبة هو ما يميزك عن الآخرين."},
+      {en: "Success is not a destination, but a continuous journey of growth and discovery.", ar: "النجاح ليس وجهة، بل هو رحلة مستمرة من النمو والاكتشاف."},
+      {en: "The more you challenge yourself, the more you discover your true potential.", ar: "كلما تحديت نفسك أكثر، اكتشفت إمكانياتك الحقيقية أكثر."},
+      {en: "Your willingness to learn from others will accelerate your progress more than working alone.", ar: "استعدادك للتعلم من الآخرين سيُسرع تقدمك أكثر من العمل بمفردك."},
+      {en: "Every project you complete is a testament to your dedication and hard work.", ar: "كل مشروع تنجزه هو شهادة على إخلاصك وجهدك."},
+      {en: "Success is built on small, consistent actions taken every day.", ar: "النجاح يُبنى على أفعال صغيرة ومتواصلة تُنفذ كل يوم."},
+      {en: "Your creativity is your greatest asset; nurture it and let it guide your work.", ar: "إبداعك هو أعظم أصولك؛ اعتنِ به ودعه يوجه عملك."},
+      {en: "The road to mastery is paved with curiosity, effort, and a love for learning.", ar: "طريق الإتقان مرصوف بالفضول والجهد وحب التعلم."},
+      {en: "Your growth is a result of the challenges you overcome and the lessons you learn.", ar: "نموك هو نتيجة التحديات التي تتغلب عليها والدروس التي تتعلمها."},
+      {en: "Success is not about being perfect, but about being persistent and willing to improve.", ar: "النجاح ليس عن الكمال، بل عن المثابرة والاستعداد للتحسن."},
+      {en: "Every new skill you acquire expands your horizons and opens up new possibilities.", ar: "كل مهارة جديدة تكتسبها توسع آفاقك وتفتح أمامك إمكانيات جديدة."},
+      {en: "Your journey in development is a marathon, not a sprint; pace yourself and enjoy the process.", ar: "رحلتك في التطوير ماراثون وليست سباق سرعة؛ نظم نفسك واستمتع بالرحلة."},
+      {en: "The best way to predict your future is to create it through your actions today.", ar: "أفضل طريقة لتوقع مستقبلك هي أن تصنعه من خلال أفعالك اليوم."},
+      {en: "Your ability to adapt to change will determine your success in a world that’s always evolving.", ar: "قدرتك على التكيف مع التغيير ستحدد نجاحك في عالم دائم التطور."},
+      {en: "Every challenge is an invitation to grow stronger and wiser.", ar: "كل تحدٍ هو دعوة لتصبح أقوى وأكثر حكمة."},
+      {en: "Success is the result of preparation, hard work, and learning from failure.", ar: "النجاح هو نتيجة التحضير والعمل الجاد والتعلم من الفشل."},
+      {en: "Your journey is a story worth telling; make it inspiring and full of growth.", ar: "رحلتك قصة تستحق أن تُروى؛ اجعلها ملهمة ومليئة بالنمو."},
+      {en: "The most important step is the next one; keep moving forward no matter what.", ar: "أهم خطوة هي الخطوة التالية؛ واصل التقدم مهما حدث."},
+      {en: "Your dedication to improvement will set you apart and lead you to success.", ar: "تفانيك في التحسن سيجعلك مميزاً ويقودك إلى النجاح."},
+      {en: "Success is about making progress, not achieving perfection.", ar: "النجاح يتعلق بإحراز التقدم وليس تحقيق الكمال."},
+      {en: "Every obstacle you overcome is a building block for your future achievements.", ar: "كل عقبة تتغلب عليها هي حجر أساس لإنجازاتك المستقبلية."},
+      {en: "Your willingness to try new things is the key to unlocking your potential.", ar: "استعدادك لتجربة أشياء جديدة هو مفتاح إطلاق إمكانياتك."},
+      {en: "Success is a journey of continuous learning and growth.", ar: "النجاح رحلة من التعلم والنمو المستمر."},
+      {en: "Your ability to stay motivated during tough times will determine your long-term success.", ar: "قدرتك على البقاء متحفزاً أثناء الأوقات الصعبة ستحدد نجاحك على المدى الطويل."},
+      {en: "Every lesson you learn brings you closer to your goals and dreams.", ar: "كل درس تتعلمه يقربك من أهدافك وأحلامك."},
+      {en: "Success is not about speed, but about steady progress and resilience.", ar: "النجاح ليس عن السرعة، بل عن التقدم المستمر والمرونة."},
+      {en: "Your journey is shaped by the choices you make and the actions you take every day.", ar: "رحلتك تتشكل بالخيارات التي تتخذها والأفعال التي تقوم بها كل يوم."},
+      {en: "The best investment you can make is in yourself and your personal growth.", ar: "أفضل استثمار يمكنك القيام به هو في نفسك ونموك الشخصي."},
+      {en: "Every step you take, no matter how small, moves you closer to your dreams.", ar: "كل خطوة تخطوها، مهما كانت صغيرة، تقربك من أحلامك."},
+      {en: "Success is about embracing challenges and turning them into opportunities.", ar: "النجاح يتعلق باحتضان التحديات وتحويلها إلى فرص."},
+      {en: "Your journey is a reflection of your commitment to growth and excellence.", ar: "رحلتك انعكاس لالتزامك بالنمو والتميز."},
+      {en: "The more you learn, the more you grow; never stop seeking knowledge.", ar: "كلما تعلمت أكثر، نميت أكثر؛ لا تتوقف عن البحث عن المعرفة."},
+      {en: "Success is about building habits that support your goals and dreams.", ar: "النجاح يتعلق ببناء عادات تدعم أهدافك وأحلامك."},
+      {en: "Your journey is a testament to your strength, resilience, and determination.", ar: "رحلتك شهادة على قوتك ومرونتك وإصرارك."},
+      {en: "Every day is a new opportunity to learn, grow, and move closer to your goals.", ar: "كل يوم فرصة جديدة لتتعلم وتنمو وتقترب من أهدافك."},
+      {en: "Success is about staying focused on your vision and working towards it every day.", ar: "النجاح يتعلق بالبقاء مركزاً على رؤيتك والعمل نحوها كل يوم."},
+      {en: "Your journey is unique; celebrate your progress and keep moving forward.", ar: "رحلتك فريدة؛ احتفل بتقدمك وواصل التقدم للأمام."}
+    ];
+    let currentLang = 'en';
+    function setRandomQuote() {
+      const quoteEl = document.getElementById('random-quote');
+      if (quoteEl) {
+        const q = quotes[Math.floor(Math.random() * quotes.length)][currentLang];
+        typeWriter(quoteEl, q);
+      }
+    }
+
+    // دالة الكتابة المتحركة
+    function typeWriter(element, text, i = 0) {
+      element.classList.add('typewriter');
+      element.textContent = '';
+      let interval = setInterval(() => {
+        element.textContent = text.slice(0, i + 1);
+        i++;
+        if (i === text.length) {
+          clearInterval(interval);
+          setTimeout(() => {
+            element.classList.remove('typewriter');
+          }, 600);
+        }
+      }, 28);
+    }
+    setRandomQuote();
+    const newQuoteBtn = document.getElementById('new-quote-btn');
+    if (newQuoteBtn) {
+      newQuoteBtn.addEventListener('click', setRandomQuote);
+    }
+
+    // تحديث لغة الاقتباس ونص زر الاقتباس عند تغيير اللغة
+    function updateQuoteLang(lang) {
+      currentLang = lang;
+      setRandomQuote();
+      if (newQuoteBtn) {
+        newQuoteBtn.textContent = newQuoteBtn.getAttribute('data-' + lang);
+      }
+    }
+    langSelect.addEventListener('change', e => {
+      updateQuoteLang(e.target.value);
+    });
+    // عند تحميل الصفحة، تأكد من ضبط نص الزر حسب اللغة الافتراضية
+    if (newQuoteBtn) {
+      newQuoteBtn.textContent = newQuoteBtn.getAttribute('data-' + currentLang);
+    }
+
+    // خانة البحث
+    const searchBar = document.getElementById('search-bar');
+    searchBar.addEventListener('input', function(e) {
+      const val = e.target.value.toLowerCase();
+      document.querySelectorAll('.card').forEach(card => {
+        const text = card.textContent.toLowerCase();
+        if (text.includes(val)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+    });
+
+    // ميزة منتقي الألوان
+    const colorPickerModal = document.getElementById('color-picker-modal');
+    const realColorInput = document.getElementById('real-color-input');
+    const colorValue = document.getElementById('color-value');
+    const copyColorBtn = document.getElementById('copy-color');
+    const colorCopiedMsg = document.getElementById('color-copied-msg');
+
+    // فتح نافذة منتقي الألوان
+    document.querySelector('.card[data-en="🎨Color Picker"]').addEventListener('click', () => {
+      colorPickerModal.style.display = 'flex';
+    });
+
+    // إغلاق نافذة منتقي الألوان
+    document.getElementById('close-color-picker').addEventListener('click', () => {
+      colorPickerModal.style.display = 'none';
+    });
+
+    // تغيير لون الخلفية عند اختيار لون جديد
+    realColorInput.addEventListener('input', (e) => {
+      const color = e.target.value;
+      document.body.style.backgroundColor = color;
+      colorValue.textContent = color;
+    });
+
+    // نسخ كود اللون إلى الحافظة
+    copyColorBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(colorValue.textContent)
+        .then(() => {
+          colorCopiedMsg.style.display = 'block';
+          setTimeout(() => {
+            colorCopiedMsg.style.display = 'none';
+          }, 2000);
+        })
+        .catch(err => console.error('Error copying text: ', err));
+    });
+
+    // ميزة مولد كلمات المرور
+    const passwordModal = document.getElementById('password-modal');
+    const passwordLength = document.getElementById('password-length');
+    const generatePasswordBtn = document.getElementById('generate-password');
+    const generatedPassword = document.getElementById('generated-password');
+    const copyPasswordBtn = document.getElementById('copy-password');
+    const passwordCopiedMsg = document.getElementById('password-copied-msg');
+
+    // فتح نافذة مولد كلمات المرور
+    document.querySelector('.card[data-en="🔐Password Generator"]').addEventListener('click', () => {
+      passwordModal.style.display = 'flex';
+    });
+
+    // إغلاق نافذة مولد كلمات المرور
+    document.getElementById('close-password-modal').addEventListener('click', () => {
+      passwordModal.style.display = 'none';
+    });
+
+    // توليد كلمة مرور عشوائية
+    function generatePassword() {
+      const length = parseInt(passwordLength.value) || 12;
+      const charset = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:,.<>?";
+      let password = "";
+      for (let i = 0; i < length; i++) {
+        const randomIndex = Math.floor(Math.random() * charset.length);
+        password += charset[randomIndex];
+      }
+      return password;
+    }
+
+    // تحديث كلمة المرور المولدة وعرضها
+    generatePasswordBtn.addEventListener('click', () => {
+      const newPassword = generatePassword();
+      generatedPassword.textContent = newPassword;
+    });
+
+    // نسخ كلمة المرور إلى الحافظة
+    copyPasswordBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(generatedPassword.textContent)
+        .then(() => {
+          passwordCopiedMsg.style.display = 'block';
+          setTimeout(() => {
+            passwordCopiedMsg.style.display = 'none';
+          }, 2000);
+        })
+        .catch(err => console.error('Error copying text: ', err));
+    });
+
+    // ميزة مولد رمز QR
+    const qrModal = document.getElementById('qr-modal');
+    const qrInput = document.getElementById('qr-input');
+    const generateQrBtn = document.getElementById('generate-qr');
+    const qrResult = document.getElementById('qr-result');
+    const copyQrBtn = document.getElementById('copy-qr');
+    const qrCopiedMsg = document.getElementById('qr-copied-msg');
+
+    // فتح نافذة مولد رمز QR
+    document.querySelector('.card[data-en="📦QR Code Generator"]').addEventListener('click', () => {
+      qrModal.style.display = 'flex';
+    });
+
+    // إغلاق نافذة مولد رمز QR
+    document.getElementById('close-qr-modal').addEventListener('click', () => {
+      qrModal.style.display = 'none';
+    });
+
+    // توليد رمز QR وعرضه
+    generateQrBtn.addEventListener('click', () => {
+      const text = qrInput.value;
+      if (!text) {
+        alert('يرجى إدخال نص أو رابط لتوليد رمز QR.');
+        return;
+      }
+      // امسح أي رمز QR سابق
+      qrResult.innerHTML = '';
+      // أنشئ رمز QR بخلفية بيضاء وحدود رمادية ليبدو كالكود التقليدي
+      const qrCode = new QRCode(qrResult, {
+        text: text,
+        width: 128,
+        height: 128,
+        colorDark : "#222", // أسود داكن
+        colorLight : "#fff", // أبيض
+        correctLevel : QRCode.CorrectLevel.H
+      });
+      qrResult.style.display = 'block';
+      copyQrBtn.style.display = 'inline-block';
+      // أضف حدود رمادية حول الصورة
+      setTimeout(() => {
+        const canvas = qrResult.querySelector('canvas');
+        if (canvas) {
+          canvas.style.border = '2px solid #bbb';
+          canvas.style.background = '#fff';
+          canvas.style.borderRadius = '8px';
+        }
+      }, 100);
+    });
+
+    // نسخ صورة رمز QR إلى الحافظة
+    copyQrBtn.addEventListener('click', () => {
+      const canvas = qrResult.querySelector('canvas');
+      if (!canvas) return;
+      canvas.toBlob((blob) => {
+        const item = new ClipboardItem({'image/png': blob});
+        navigator.clipboard.write([item]).then(() => {
+          qrCopiedMsg.style.display = 'block';
+          setTimeout(() => {
+            qrCopiedMsg.style.display = 'none';
+          }, 2000);
+        }, (err) => console.error('Error copying QR code: ', err));
+      });
+    });
+
+    // ميزة منسق JSON
+    const jsonModal = document.getElementById('json-modal');
+    const jsonInput = document.getElementById('json-input');
+    const formatJsonBtn = document.getElementById('format-json');
+    const jsonOutput = document.getElementById('json-output');
+    const copyJsonBtn = document.getElementById('copy-json');
+    const jsonCopiedMsg = document.getElementById('json-copied-msg');
+    const jsonErrorMsg = document.getElementById('json-error-msg');
+
+    // فتح نافذة منسق JSON
+    document.querySelector('.card[data-en="🧾JSON Formatter"]').addEventListener('click', () => {
+      jsonModal.style.display = 'flex';
+    });
+
+    // إغلاق نافذة منسق JSON
+    document.getElementById('close-json-modal').addEventListener('click', () => {
+      jsonModal.style.display = 'none';
+    });
+
+    // تنسيق JSON وعرض النتيجة
+    formatJsonBtn.addEventListener('click', () => {
+      const json = jsonInput.value;
+      try {
+        const parsed = JSON.parse(json);
+        const formatted = JSON.stringify(parsed, null, 2);
+        jsonOutput.value = formatted;
+        jsonErrorMsg.style.display = 'none';
+      } catch (e) {
+        jsonErrorMsg.textContent = (langSelect.value === 'ar') ? 'خطأ في تنسيق JSON. يرجى التحقق من المدخلات.' : 'Invalid JSON format. Please check your input.';
+        jsonErrorMsg.style.display = 'block';
+        jsonOutput.value = '';
+      }
+    });
+
+    // نسخ نتيجة التنسيق إلى الحافظة
+    copyJsonBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(jsonOutput.value)
+        .then(() => {
+          jsonCopiedMsg.style.display = 'block';
+          setTimeout(() => {
+            jsonCopiedMsg.style.display = 'none';
+          }, 2000);
+        })
+        .catch(err => console.error('Error copying text: ', err));
+    });
+
+    // ميزة مولد أسماء المشاريع
+    const projectModal = document.getElementById('project-modal');
+    const generateProjectNameBtn = document.getElementById('generate-project-name');
+    const projectNameOutput = document.getElementById('project-name-output');
+    const copyProjectNameBtn = document.getElementById('copy-project-name');
+    const projectCopiedMsg = document.getElementById('project-copied-msg');
+    const projectNames = [
+      "PixelForge", "CodeNest", "DesignPulse", "TaskFlow", "DevSpark", "IdeaWave", "ProtoBox", "FlowGrid", "SnapCore", "BrightBase", "MetaVision", "Scriptify", "CloudMint", "DataNest", "AppSeed", "Brandly", "Taskly", "Formify", "Dashly", "Syncly"
+    ];
+    document.querySelector('.card[data-en="💡Project Name Generator"]').addEventListener('click', () => {
+      projectModal.style.display = 'flex';
+      projectNameOutput.textContent = '—';
+    });
+    document.getElementById('close-project-modal').addEventListener('click', () => {
+      projectModal.style.display = 'none';
+    });
+    generateProjectNameBtn.addEventListener('click', () => {
+      const name = projectNames[Math.floor(Math.random() * projectNames.length)];
+      projectNameOutput.textContent = name;
+    });
+    copyProjectNameBtn.addEventListener('click', () => {
+      navigator.clipboard.writeText(projectNameOutput.textContent)
+        .then(() => {
+          projectCopiedMsg.style.display = 'block';
+          setTimeout(() => { projectCopiedMsg.style.display = 'none'; }, 2000);
+        });
+    });
+
+    // معاينة Markdown
+    const markdownModal = document.getElementById('markdown-modal');
+    const markdownInput = document.getElementById('markdown-input');
+    const previewMarkdownBtn = document.getElementById('preview-markdown');
+    const markdownOutput = document.getElementById('markdown-output');
+    document.querySelector('.card[data-en="📄Markdown Previewer"]').addEventListener('click', () => {
+      markdownModal.style.display = 'flex';
+      markdownInput.value = '';
+      markdownOutput.innerHTML = '';
+    });
+    document.getElementById('close-markdown-modal').addEventListener('click', () => {
+      markdownModal.style.display = 'none';
+    });
+    previewMarkdownBtn.addEventListener('click', () => {
+      // تحويل Markdown إلى HTML (مبسط)
+      let text = markdownInput.value;
+      text = text.replace(/\\*\\*(.*?)\\*\\*/g, '<strong>$1</strong>');
+      text = text.replace(/\\*(.*?)\\*/g, '<em>$1</em>');
+      text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+      text = text.replace(/^# (.*$)/gim, '<h2>$1</h2>');
+      text = text.replace(/^## (.*$)/gim, '<h3>$1</h3>');
+      text = text.replace(/^### (.*$)/gim, '<h4>$1</h4>');
+      text = text.replace(/\\n/g, '<br>');
+      markdownOutput.innerHTML = text;
+    });
+
+    // عداد تنازلي
+    const countdownModal = document.getElementById('countdown-modal');
+    const countdownSeconds = document.getElementById('countdown-seconds');
+    const startCountdownBtn = document.getElementById('start-countdown');
+    const countdownOutput = document.getElementById('countdown-output');
+    let countdownInterval;
+    document.querySelector('.card[data-en="⏳Countdown Timer"]').addEventListener('click', () => {
+      countdownModal.style.display = 'flex';
+      countdownOutput.textContent = '—';
+      countdownSeconds.value = 10;
+      clearInterval(countdownInterval);
+    });
+    document.getElementById('close-countdown-modal').addEventListener('click', () => {
+      countdownModal.style.display = 'none';
+      clearInterval(countdownInterval);
+    });
+    startCountdownBtn.addEventListener('click', () => {
+      let seconds = parseInt(countdownSeconds.value) || 10;
+      countdownOutput.textContent = seconds;
+      clearInterval(countdownInterval);
+      countdownInterval = setInterval(() => {
+        seconds--;
+        countdownOutput.textContent = seconds;
+        if (seconds <= 0) {
+          clearInterval(countdownInterval);
+          countdownOutput.textContent = (langSelect.value === 'ar') ? 'انتهى الوقت!' : 'Time is up!';
+        }
+      }, 1000);
+    });
+
+    // ملاحظات وSticky Notes
+    const notesModal = document.getElementById('notes-modal');
+    const notesInput = document.getElementById('notes-input');
+    const addNoteBtn = document.getElementById('add-note');
+    const notesList = document.getElementById('notes-list');
+    let notesArr = [];
+    document.querySelector('.card[data-en="📝Notes & Sticky Tasks"]').addEventListener('click', () => {
+      notesModal.style.display = 'flex';
+      renderNotes();
+    });
+    document.getElementById('close-notes-modal').addEventListener('click', () => {
+      notesModal.style.display = 'none';
+    });
+    addNoteBtn.addEventListener('click', () => {
+      const note = notesInput.value.trim();
+      if (note) {
+        notesArr.push(note);
+        notesInput.value = '';
+        renderNotes();
+      }
+    });
+    function renderNotes() {
+      notesList.innerHTML = '';
+      notesArr.forEach((note, idx) => {
+        const div = document.createElement('div');
+        div.textContent = note;
+        div.style.background = '#ffe';
+        div.style.color = '#222';
+        div.style.borderRadius = '6px';
+        div.style.padding = '7px 10px';
+        div.style.marginBottom = '7px';
+        div.style.position = 'relative';
+        // زر حذف
+        const delBtn = document.createElement('button');
+        delBtn.textContent = '×';
+        delBtn.style.position = 'absolute';
+        delBtn.style.top = '4px';
+        delBtn.style.right = '7px';
+        delBtn.style.background = 'none';
+        delBtn.style.border = 'none';
+        delBtn.style.color = '#ff4c4c';
+        delBtn.style.fontSize = '16px';
+        delBtn.style.cursor = 'pointer';
+        delBtn.onclick = () => {
+          notesArr.splice(idx, 1);
+          renderNotes();
+        };
+        div.appendChild(delBtn);
+        notesList.appendChild(div);
+      });
+    }
+
+    // محلل الوسوم Meta
+    const metaModal = document.getElementById('meta-modal');
+    const metaInput = document.getElementById('meta-input');
+    const analyzeMetaBtn = document.getElementById('analyze-meta');
+    const metaOutput = document.getElementById('meta-output');
+    document.querySelector('.card[data-en="🔍Meta Tag Analyzer"]').addEventListener('click', () => {
+      metaModal.style.display = 'flex';
+      metaInput.value = '';
+      metaOutput.innerHTML = '';
+    });
+    document.getElementById('close-meta-modal').addEventListener('click', () => {
+      metaModal.style.display = 'none';
+    });
+    analyzeMetaBtn.addEventListener('click', () => {
+      const html = metaInput.value;
+      const metaTags = html.match(/<meta[^>]*>/gi);
+      if (!metaTags) {
+        metaOutput.innerHTML = (langSelect.value === 'ar') ? 'لا توجد وسوم meta.' : 'No meta tags found.';
+        return;
+      }
+      let result = '<ul style="padding-left:18px;">';
+      metaTags.forEach(tag => {
+        result += `<li>${tag}</li>`;
+      });
+      result += '</ul>';
+      metaOutput.innerHTML = result;
+    });
+  </script>
+</body>
+</html>
